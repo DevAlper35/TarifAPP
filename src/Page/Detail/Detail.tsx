@@ -11,17 +11,19 @@ export default function Detail({route}) {
   const {idMeal} = route.params
   const {resultData, loading, error} = useFetch(`${API_URL}${idMeal}`)
 
-  const openYouTube = (url) => {
-    Linking.canOpenURL(url)
-      .then((supported) => {
-        if (supported) {
-          Linking.openURL(url);
-        } else {
-          Alert.alert("Bu URL açılamıyor: " + url);
-        }
-      })
-      .catch((err) => console.error("An error occurred", err));
+  const openYouTube = async (url) => {
+    try {
+      const supported = await Linking.canOpenURL(url);
+      if (supported) {
+        await Linking.openURL(url);
+      } else {
+        Alert.alert(`URL açılamıyor: ${url}`);
+      }
+    } catch (err) {
+      console.error("An error occurred", err);
+      Alert.alert("Bir hata oluştu", err.message);
     }
+  };
   if (loading){
     return (
         <Loading/>
@@ -45,8 +47,6 @@ export default function Detail({route}) {
             onPress={() => openYouTube(resultData.meals[0].strYoutube)}/>
           </View>
       </ScrollView>
-      
-      
     </SafeAreaView>
     
   )
